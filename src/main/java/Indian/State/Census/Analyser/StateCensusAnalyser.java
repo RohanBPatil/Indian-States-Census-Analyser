@@ -3,6 +3,7 @@ package Indian.State.Census.Analyser;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Iterator;
 
@@ -13,13 +14,14 @@ public class StateCensusAnalyser {
 
 	/**
 	 * returns number of entries in the given csv file throws exception if wrong
-	 * file path is given
+	 * file path is given or wrong type of file is there
 	 * 
 	 * @param filePath
 	 * @return
 	 * @throws CensusAnalyserException
+	 * @throws IOException
 	 */
-	public int loadStateCensusData(String filePath) throws CensusAnalyserException {
+	public int loadStateCensusData(String filePath) throws CensusAnalyserException, IOException {
 		int numOfRecords = 0;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath));
@@ -32,11 +34,11 @@ public class StateCensusAnalyser {
 				numOfRecords++;
 				censusCSVIterator.next();
 			}
-		} catch (IOException exception) {
+		} catch (NoSuchFileException exception) {
+			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
+		} catch (RuntimeException exception) {
 			throw new CensusAnalyserException(exception.getMessage(),
 					CensusAnalyserException.ExceptionType.INCORRECT_FILE);
-		} catch (Exception exception) {
-			exception.printStackTrace();
 		}
 		return numOfRecords;
 	}
