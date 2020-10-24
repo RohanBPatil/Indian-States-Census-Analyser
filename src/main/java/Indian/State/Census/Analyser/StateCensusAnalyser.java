@@ -12,12 +12,14 @@ import com.opencsv.bean.CsvToBeanBuilder;
 public class StateCensusAnalyser {
 
 	/**
-	 * returns number of entries in the given csv file
+	 * returns number of entries in the given csv file throws exception if wrong
+	 * file path is given
 	 * 
 	 * @param filePath
 	 * @return
+	 * @throws CensusAnalyserException
 	 */
-	public int loadStateCensusData(String filePath) {
+	public int loadStateCensusData(String filePath) throws CensusAnalyserException {
 		int numOfRecords = 0;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath));
@@ -31,6 +33,9 @@ public class StateCensusAnalyser {
 				censusCSVIterator.next();
 			}
 		} catch (IOException exception) {
+			throw new CensusAnalyserException(exception.getMessage(),
+					CensusAnalyserException.ExceptionType.INCORRECT_FILE);
+		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
 		return numOfRecords;
