@@ -27,5 +27,8 @@ dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     
-    compile 'com.opencsv:opencsv:5.2'
+    compile group: 'com.opencsv', name: 'opencsv', version: '4.3'
+    
+    compile 'org.apache.commons:commons-lang3:3.11'
+    
 }
