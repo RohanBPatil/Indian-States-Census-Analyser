@@ -23,8 +23,8 @@ public class StateCensusAnalyser {
 		int numOfRecords = 0;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
-			Iterator<CSVStateCensus> censusCSVIterator = new OpenCSVBuilder().getCSVFileIterator(reader,
-					CSVStateCensus.class);
+			ICSVBuilder<CSVStateCensus> csvBuilder = CSVBuilderFactory.createCSVBuilder();
+			Iterator<CSVStateCensus> censusCSVIterator = csvBuilder.getCSVFileIterator(reader,CSVStateCensus.class);
 			numOfRecords = getNumOfRecords(censusCSVIterator);
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
@@ -49,7 +49,8 @@ public class StateCensusAnalyser {
 		int numOfRecords = 0;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
-			Iterator<CSVStates> censusCSVIterator = new OpenCSVBuilder().getCSVFileIterator(reader, CSVStates.class);
+			ICSVBuilder<CSVStates> csvBuilder = CSVBuilderFactory.createCSVBuilder();
+			Iterator<CSVStates> censusCSVIterator = csvBuilder.getCSVFileIterator(reader, CSVStates.class);
 			numOfRecords = getNumOfRecords(censusCSVIterator);
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
