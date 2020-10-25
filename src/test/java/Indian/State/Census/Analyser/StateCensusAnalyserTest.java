@@ -11,6 +11,7 @@ class StateCensusAnalyserTest {
 	private static final String WRONG_DELIMITER_PATH = "C:\\Users\\abc\\eclipse-workspace\\indiaStateCensusDelimiter.csv";
 	private static final String WRONG_HEADER_FILE_PATH = "C:\\Users\\abc\\eclipse-workspace\\Indian State Census Analyser\\IndiaStateCode.csv";
 	private static final String INDIA_STATE_CODE_PATH = "C:\\Users\\abc\\eclipse-workspace\\Indian State Census Analyser\\IndiaStateCode.csv";
+
 	/**
 	 * UC1, TC 1.1 : checking file is correct or not by checking number of entries
 	 */
@@ -71,9 +72,9 @@ class StateCensusAnalyserTest {
 		});
 		assertTrue(exception.type == CensusAnalyserException.ExceptionType.INCORRECT_FILE);
 	}
-	
+
 	/**
-	 * UC2, TC 1.1 : checking file is correct or not by checking number of entries
+	 * UC2, TC 2.1 : checking file is correct or not by checking number of entries
 	 */
 	@Test
 	public void givenStateCodeCSVFile_shouldReturn_CorrectNumberOfRecords() {
@@ -84,9 +85,9 @@ class StateCensusAnalyserTest {
 			exception.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * UC2, TC 1.2 : checking correct file path is given or not
+	 * UC2, TC 2.2 : checking correct file path is given or not
 	 */
 	@Test
 	public void givenWrongFile_shouldThrow_CensusAnalyserExceptionForStatesCode() {
@@ -96,9 +97,9 @@ class StateCensusAnalyserTest {
 		});
 		assertTrue(exception.type == CensusAnalyserException.ExceptionType.NO_FILE);
 	}
-	
+
 	/**
-	 * UC2, TC 1.3 : checking correct file type(extension) is given or not
+	 * UC2, TC 2.3 : checking correct file type(extension) is given or not
 	 */
 	@Test
 	public void givenWrongTypeOfFile_shouldThrow_CensusAnalyserExceptionForStatesCode() {
@@ -108,15 +109,27 @@ class StateCensusAnalyserTest {
 		});
 		assertTrue(exception.type == CensusAnalyserException.ExceptionType.INCORRECT_FILE);
 	}
-	
+
 	/**
-	 * UC2, TC 1.4 : checking if throws exception for incorrect delimiter
+	 * UC2, TC 2.4 : checking if throws exception for incorrect delimiter
 	 */
 	@Test
 	public void givenWrongDelimiterFile_shouldThrow_CensusAnalyserExceptionForStatesCode() {
 		StateCensusAnalyser stateCensusAnalyser = new StateCensusAnalyser();
 		CensusAnalyserException exception = assertThrows(CensusAnalyserException.class, () -> {
 			stateCensusAnalyser.loadStateCode(WRONG_DELIMITER_PATH);
+		});
+		assertTrue(exception.type == CensusAnalyserException.ExceptionType.INCORRECT_FILE);
+	}
+
+	/**
+	 * UC2, TC 2.5 : checking if throws exception for incorrect headers
+	 */
+	@Test
+	public void givenWrongHeadersInFile_shouldThrow_CensusAnalyserExceptionForStatesCode() {
+		StateCensusAnalyser stateCensusAnalyser = new StateCensusAnalyser();
+		CensusAnalyserException exception = assertThrows(CensusAnalyserException.class, () -> {
+			stateCensusAnalyser.loadStateCode(INDIA_CENSUS_FILE_PATH);
 		});
 		assertTrue(exception.type == CensusAnalyserException.ExceptionType.INCORRECT_FILE);
 	}
