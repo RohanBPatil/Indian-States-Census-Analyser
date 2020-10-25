@@ -26,11 +26,7 @@ public class StateCensusAnalyser {
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
 			Iterator<CSVStateCensus> censusCSVIterator = loadCSVData(reader, CSVStateCensus.class);
-
-			while (censusCSVIterator.hasNext()) {
-				numOfRecords++;
-				censusCSVIterator.next();
-			}
+			numOfRecords = getNumOfRecords(censusCSVIterator);
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
 		} catch (RuntimeException exception) {
@@ -55,41 +51,54 @@ public class StateCensusAnalyser {
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
 			Iterator<CSVStates> censusCSVIterator = loadCSVData(reader, CSVStates.class);
-
-			while (censusCSVIterator.hasNext()) {
-				numOfRecords++;
-				censusCSVIterator.next();
-			}
+			numOfRecords = getNumOfRecords(censusCSVIterator);
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
 		} catch (RuntimeException exception) {
-			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.INCORRECT_FILE);
+			throw new CensusAnalyserException(exception.getMessage(),
+					CensusAnalyserException.ExceptionType.INCORRECT_FILE);
 		}
 
 		return numOfRecords;
 	}
-	
+
 	/**
-	 * Refactor 1A : to avoid DRY for extracting data 
+	 * Refactor 1A : to avoid DRY for extracting data
+	 * 
 	 * @param <k>
 	 * @param reader
 	 * @param csvClass
 	 * @return
 	 * @throws CensusAnalyserException
 	 */
-	private static <k> Iterator<k> loadCSVData(Reader reader, Class<k> csvClass) throws CensusAnalyserException{
+	private static <k> Iterator<k> loadCSVData(Reader reader, Class<k> csvClass) throws CensusAnalyserException {
 		try {
 			CsvToBeanBuilder<k> csvToBeanBuilder = new CsvToBeanBuilder<>(reader);
 			csvToBeanBuilder.withType(csvClass);
 			csvToBeanBuilder.withIgnoreLeadingWhiteSpace(true);
 			CsvToBean<k> csvToBean = csvToBeanBuilder.build();
 			Iterator<k> CSVIterator = csvToBean.iterator(); // wrong type of file extension,
-			return CSVIterator;													// delimiter or headers
-		}
-		catch(IllegalStateException e) {
+			return CSVIterator; // delimiter or headers
+		} catch (IllegalStateException e) {
 			throw new CensusAnalyserException(e.getMessage(), CensusAnalyserException.ExceptionType.UNABLE_TO_PARSE);
 		}
-		
+
+	}
+
+	/**
+	 * Refactor 1B : to avoid DRY for counting number of records
+	 * 
+	 * @param <k>
+	 * @param iterator
+	 * @return
+	 */
+	private static <k> int getNumOfRecords(Iterator<k> iterator) {
+		int countOfRecord = 0;
+		while (iterator.hasNext()) {
+			countOfRecord++;
+			iterator.next();
+		}
+		return countOfRecord;
 	}
 
 	public static void main(String[] args) {
