@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class StateCensusAnalyser {
@@ -25,8 +26,8 @@ public class StateCensusAnalyser {
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
 			ICSVBuilder<CSVStateCensus> csvBuilder = CSVBuilderFactory.createCSVBuilder();
-			Iterator<CSVStateCensus> censusCSVIterator = csvBuilder.getCSVFileIterator(reader,CSVStateCensus.class);
-			numOfRecords = getNumOfRecords(censusCSVIterator);
+			List<CSVStateCensus> censusCSVList = csvBuilder.getCSVFileList(reader,CSVStateCensus.class);
+			numOfRecords = censusCSVList.size();
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
 		} catch (RuntimeException exception) {
@@ -52,8 +53,8 @@ public class StateCensusAnalyser {
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
 			ICSVBuilder<CSVStates> csvBuilder = CSVBuilderFactory.createCSVBuilder();
-			Iterator<CSVStates> censusCSVIterator = csvBuilder.getCSVFileIterator(reader, CSVStates.class);
-			numOfRecords = getNumOfRecords(censusCSVIterator);
+			List<CSVStates> censusCSVList = csvBuilder.getCSVFileList(reader,CSVStates.class);
+			numOfRecords = censusCSVList.size();
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
 		} catch (RuntimeException exception) {
@@ -64,19 +65,6 @@ public class StateCensusAnalyser {
 		return numOfRecords;
 	}
 
-	/**
-	 * Refactor 2 : to ensure single responsibility principle and delegation
-	 * principle
-	 * 
-	 * @param <k>
-	 * @param iterator
-	 * @return
-	 */
-	private <k> int getNumOfRecords(Iterator<k> iterator) {
-		Iterable<k> csvIterable = () -> iterator;
-		int countOfRecords = (int) StreamSupport.stream(csvIterable.spliterator(), false).count();
-		return countOfRecords;
-	}
 
 	public static void main(String[] args) {
 		System.out.println("Welcome to indian state census analyser");
