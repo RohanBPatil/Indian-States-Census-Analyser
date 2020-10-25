@@ -96,4 +96,17 @@ class StateCensusAnalyserTest {
 		});
 		assertTrue(exception.type == CensusAnalyserException.ExceptionType.NO_FILE);
 	}
+	
+	/**
+	 * UC2, TC 1.3 : checking correct file type(extension) is given or not
+	 */
+	@Test
+	public void givenWrongTypeOfFile_shouldThrow_CensusAnalyserExceptionForStatesCode() {
+		StateCensusAnalyser stateCensusAnalyser = new StateCensusAnalyser();
+		CensusAnalyserException exception = assertThrows(CensusAnalyserException.class, () -> {
+			stateCensusAnalyser.loadStateCode(WRONG_FILE_TYPE_PATH);
+		});
+		assertTrue(exception.type == CensusAnalyserException.ExceptionType.INCORRECT_FILE);
+	}
+
 }
