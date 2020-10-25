@@ -6,9 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Iterator;
-
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
+import java.util.stream.StreamSupport;
 
 public class StateCensusAnalyser {
 
@@ -25,7 +23,8 @@ public class StateCensusAnalyser {
 		int numOfRecords = 0;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
-			Iterator<CSVStateCensus> censusCSVIterator = loadCSVData(reader, CSVStateCensus.class);
+			Iterator<CSVStateCensus> censusCSVIterator = new OpenCSVBuilder().getCSVFileIterator(reader,
+					CSVStateCensus.class);
 			numOfRecords = getNumOfRecords(censusCSVIterator);
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
@@ -50,7 +49,7 @@ public class StateCensusAnalyser {
 		int numOfRecords = 0;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
-			Iterator<CSVStates> censusCSVIterator = loadCSVData(reader, CSVStates.class);
+			Iterator<CSVStates> censusCSVIterator = new OpenCSVBuilder().getCSVFileIterator(reader, CSVStates.class);
 			numOfRecords = getNumOfRecords(censusCSVIterator);
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
@@ -63,42 +62,17 @@ public class StateCensusAnalyser {
 	}
 
 	/**
-	 * Refactor 1A : to avoid DRY for extracting data
-	 * 
-	 * @param <k>
-	 * @param reader
-	 * @param csvClass
-	 * @return
-	 * @throws CensusAnalyserException
-	 */
-	private static <k> Iterator<k> loadCSVData(Reader reader, Class<k> csvClass) throws CensusAnalyserException {
-		try {
-			CsvToBeanBuilder<k> csvToBeanBuilder = new CsvToBeanBuilder<>(reader);
-			csvToBeanBuilder.withType(csvClass);
-			csvToBeanBuilder.withIgnoreLeadingWhiteSpace(true);
-			CsvToBean<k> csvToBean = csvToBeanBuilder.build();
-			Iterator<k> CSVIterator = csvToBean.iterator(); // wrong type of file extension,
-			return CSVIterator; // delimiter or headers
-		} catch (IllegalStateException e) {
-			throw new CensusAnalyserException(e.getMessage(), CensusAnalyserException.ExceptionType.UNABLE_TO_PARSE);
-		}
-
-	}
-
-	/**
-	 * Refactor 1B : to avoid DRY for counting number of records
+	 * Refactor 2 : to ensure single responsibility principle and delegation
+	 * principle
 	 * 
 	 * @param <k>
 	 * @param iterator
 	 * @return
 	 */
-	private static <k> int getNumOfRecords(Iterator<k> iterator) {
-		int countOfRecord = 0;
-		while (iterator.hasNext()) {
-			countOfRecord++;
-			iterator.next();
-		}
-		return countOfRecord;
+	private <k> int getNumOfRecords(Iterator<k> iterator) {
+		Iterable<k> csvIterable = () -> iterator;
+		int countOfRecords = (int) StreamSupport.stream(csvIterable.spliterator(), false).count();
+		return countOfRecords;
 	}
 
 	public static void main(String[] args) {
