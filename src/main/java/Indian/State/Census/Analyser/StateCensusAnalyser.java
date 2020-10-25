@@ -25,13 +25,7 @@ public class StateCensusAnalyser {
 		int numOfRecords = 0;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
-
-			CsvToBeanBuilder<CSVStateCensus> csvToBeanBuilder = new CsvToBeanBuilder<>(reader);
-			csvToBeanBuilder.withType(CSVStateCensus.class);
-			csvToBeanBuilder.withIgnoreLeadingWhiteSpace(true);
-			CsvToBean<CSVStateCensus> csvToBean = csvToBeanBuilder.build();
-			Iterator<CSVStateCensus> censusCSVIterator = csvToBean.iterator(); // wrong type of file extension,
-																				// delimiter or headers
+			Iterator<CSVStateCensus> censusCSVIterator = loadCSVData(reader, CSVStateCensus.class);
 
 			while (censusCSVIterator.hasNext()) {
 				numOfRecords++;
@@ -60,13 +54,7 @@ public class StateCensusAnalyser {
 		int numOfRecords = 0;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
-
-			CsvToBeanBuilder<CSVStates> csvToBeanBuilder = new CsvToBeanBuilder<>(reader);
-			csvToBeanBuilder.withType(CSVStates.class);
-			csvToBeanBuilder.withIgnoreLeadingWhiteSpace(true);
-			CsvToBean<CSVStates> csvToBean = csvToBeanBuilder.build();
-			Iterator<CSVStates> censusCSVIterator = csvToBean.iterator(); // wrong type of file extension,
-																			// delimiter or headers
+			Iterator<CSVStates> censusCSVIterator = loadCSVData(reader, CSVStates.class);
 
 			while (censusCSVIterator.hasNext()) {
 				numOfRecords++;
@@ -75,11 +63,33 @@ public class StateCensusAnalyser {
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
 		} catch (RuntimeException exception) {
-			throw new CensusAnalyserException(exception.getMessage(),
-					CensusAnalyserException.ExceptionType.INCORRECT_FILE);
+			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.INCORRECT_FILE);
 		}
 
 		return numOfRecords;
+	}
+	
+	/**
+	 * Refactor 1A : to avoid DRY for extracting data 
+	 * @param <k>
+	 * @param reader
+	 * @param csvClass
+	 * @return
+	 * @throws CensusAnalyserException
+	 */
+	private static <k> Iterator<k> loadCSVData(Reader reader, Class<k> csvClass) throws CensusAnalyserException{
+		try {
+			CsvToBeanBuilder<k> csvToBeanBuilder = new CsvToBeanBuilder<>(reader);
+			csvToBeanBuilder.withType(csvClass);
+			csvToBeanBuilder.withIgnoreLeadingWhiteSpace(true);
+			CsvToBean<k> csvToBean = csvToBeanBuilder.build();
+			Iterator<k> CSVIterator = csvToBean.iterator(); // wrong type of file extension,
+			return CSVIterator;													// delimiter or headers
+		}
+		catch(IllegalStateException e) {
+			throw new CensusAnalyserException(e.getMessage(), CensusAnalyserException.ExceptionType.UNABLE_TO_PARSE);
+		}
+		
 	}
 
 	public static void main(String[] args) {
