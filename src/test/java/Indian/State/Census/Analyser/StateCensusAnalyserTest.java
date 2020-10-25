@@ -108,5 +108,16 @@ class StateCensusAnalyserTest {
 		});
 		assertTrue(exception.type == CensusAnalyserException.ExceptionType.INCORRECT_FILE);
 	}
-
+	
+	/**
+	 * UC2, TC 1.4 : checking if throws exception for incorrect delimiter
+	 */
+	@Test
+	public void givenWrongDelimiterFile_shouldThrow_CensusAnalyserExceptionForStatesCode() {
+		StateCensusAnalyser stateCensusAnalyser = new StateCensusAnalyser();
+		CensusAnalyserException exception = assertThrows(CensusAnalyserException.class, () -> {
+			stateCensusAnalyser.loadStateCode(WRONG_DELIMITER_PATH);
+		});
+		assertTrue(exception.type == CensusAnalyserException.ExceptionType.INCORRECT_FILE);
+	}
 }
