@@ -84,4 +84,16 @@ class StateCensusAnalyserTest {
 			exception.printStackTrace();
 		}
 	}
+	
+	/**
+	 * UC2, TC 1.2 : checking correct file path is given or not
+	 */
+	@Test
+	public void givenWrongFile_shouldThrow_CensusAnalyserExceptionForStatesCode() {
+		StateCensusAnalyser stateCensusAnalyser = new StateCensusAnalyser();
+		CensusAnalyserException exception = assertThrows(CensusAnalyserException.class, () -> {
+			stateCensusAnalyser.loadStateCode(NO_FILE_PATH);
+		});
+		assertTrue(exception.type == CensusAnalyserException.ExceptionType.NO_FILE);
+	}
 }
