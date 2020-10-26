@@ -5,14 +5,17 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 
 import com.CSVBuilder.CSVBuilderException;
 import com.CSVBuilder.CSVBuilderFactory;
 import com.CSVBuilder.ICSVBuilder;
+import com.google.gson.Gson;
 
 public class StateCensusAnalyser {
-
+	List<CSVStateCensus> censusCSVList = null;
+	List<CSVStates> stateCodeCSVList = null;
 	/**
 	 * returns number of entries in the given csv file throws exception if wrong
 	 * file path is given or wrong type of file is there
@@ -28,7 +31,7 @@ public class StateCensusAnalyser {
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
 			ICSVBuilder<CSVStateCensus> csvBuilder = CSVBuilderFactory.createCSVBuilder();
-			List<CSVStateCensus> censusCSVList = csvBuilder.getCSVFileList(reader,CSVStateCensus.class);
+			censusCSVList = csvBuilder.getCSVFileList(reader,CSVStateCensus.class);
 			numOfRecords = censusCSVList.size();
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
@@ -53,10 +56,10 @@ public class StateCensusAnalyser {
 	public int loadStateCode(String filePath) throws CensusAnalyserException, IOException, CSVBuilderException {
 		int numOfRecords = 0;
 		try {
-			Reader reader = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
+			Reader readers = Files.newBufferedReader(Paths.get(filePath)); // no such file exception
 			ICSVBuilder<CSVStates> csvBuilder = CSVBuilderFactory.createCSVBuilder();
-			List<CSVStates> censusCSVList = csvBuilder.getCSVFileList(reader,CSVStates.class);
-			numOfRecords = censusCSVList.size();
+			stateCodeCSVList = csvBuilder.getCSVFileList(readers,CSVStates.class);
+			numOfRecords = stateCodeCSVList.size();
 		} catch (NoSuchFileException exception) {
 			throw new CensusAnalyserException(exception.getMessage(), CensusAnalyserException.ExceptionType.NO_FILE);
 		} catch (RuntimeException exception) {
@@ -66,7 +69,29 @@ public class StateCensusAnalyser {
 
 		return numOfRecords;
 	}
+	
+	public String getStateWiseSortedCensusData() throws CensusAnalyserException {
+		if(censusCSVList == null || censusCSVList.size() == 0) {
+			throw new CensusAnalyserException("No Census Data", CensusAnalyserException.ExceptionType.NO_CENSUS_DATA);
+		}
+		Comparator<CSVStateCensus> censusComparator = Comparator.comparing(census -> census.state);
+		this.sort(censusComparator);
+		String sortedStateCensusJson = new Gson().toJson(censusCSVList);
+		return sortedStateCensusJson;
+	}
 
+	private void sort(Comparator<CSVStateCensus> censusComparator) {
+		for (int i = 0; i < censusCSVList.size(); i++) {
+			for (int j = 0; j < censusCSVList.size() - i - 1; j++) {
+				CSVStateCensus census1 = censusCSVList.get(j);
+				CSVStateCensus census2 = censusCSVList.get(j + 1);
+				if (censusComparator.compare(census1, census2) > 0) {
+					censusCSVList.set(j, census2);
+					censusCSVList.set(j + 1, census1);
+				}
+			}
+		}
+	}
 
 	public static void main(String[] args) {
 		System.out.println("Welcome to indian state census analyser");
