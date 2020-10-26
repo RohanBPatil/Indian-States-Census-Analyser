@@ -206,9 +206,10 @@ class StateCensusAnalyserTest {
 		CSVStates[] censusCSV = new Gson().fromJson(sortedCensusData, CSVStates[].class);
 		assertEquals("West Bengal", censusCSV[censusCSV.length - 1].state);
 	}
-	
+
 	/**
 	 * UC 5 : sorting data based on population in descending order
+	 * 
 	 * @throws IOException
 	 * @throws CensusAnalyserException
 	 * @throws CSVBuilderException
@@ -222,7 +223,7 @@ class StateCensusAnalyserTest {
 		CSVStateCensus[] censusCSV = new Gson().fromJson(sortedCensusData, CSVStateCensus[].class);
 		assertEquals("Uttar Pradesh", censusCSV[0].state);
 	}
-	
+
 	/**
 	 * UC 5 : sorting data based on population in descending order
 	 * 
@@ -238,5 +239,39 @@ class StateCensusAnalyserTest {
 		String sortedCensusData = stateCensusAnalyser.getPopulationWiseSortedCensusData();
 		CSVStateCensus[] censusCSV = new Gson().fromJson(sortedCensusData, CSVStateCensus[].class);
 		assertEquals("Sikkim", censusCSV[censusCSV.length - 1].state);
+	}
+
+	/**
+	 * UC 6 : sorting data based on population density in descending order
+	 * 
+	 * @throws IOException
+	 * @throws CensusAnalyserException
+	 * @throws CSVBuilderException
+	 */
+	@Test
+	public void givenIndianCensusData_WhenSortedOnPopulationDensity_ShouldReturnSortedResult()
+			throws IOException, CensusAnalyserException, CSVBuilderException {
+		StateCensusAnalyser stateCensusAnalyser = new StateCensusAnalyser();
+		stateCensusAnalyser.loadStateCensusData(INDIA_CENSUS_FILE_PATH);
+		String sortedCensusData = stateCensusAnalyser.getPopulationDensityWiseSortedCensusData();
+		CSVStateCensus[] censusCSV = new Gson().fromJson(sortedCensusData, CSVStateCensus[].class);
+		assertEquals("Bihar", censusCSV[0].state);
+	}
+
+	/**
+	 * UC 6 : sorting data based on population density in descending order
+	 * 
+	 * @throws IOException
+	 * @throws CensusAnalyserException
+	 * @throws CSVBuilderException
+	 */
+	@Test
+	public void givenIndianCensusData_WhenSortedOnPopulationDensity_ShouldReturnSortedResultForLast()
+			throws IOException, CensusAnalyserException, CSVBuilderException {
+		StateCensusAnalyser stateCensusAnalyser = new StateCensusAnalyser();
+		stateCensusAnalyser.loadStateCensusData(INDIA_CENSUS_FILE_PATH);
+		String sortedCensusData = stateCensusAnalyser.getPopulationDensityWiseSortedCensusData();
+		CSVStateCensus[] censusCSV = new Gson().fromJson(sortedCensusData, CSVStateCensus[].class);
+		assertEquals("Arunachal Pradesh", censusCSV[censusCSV.length - 1].state);
 	}
 }
