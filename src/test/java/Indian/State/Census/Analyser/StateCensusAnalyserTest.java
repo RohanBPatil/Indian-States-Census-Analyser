@@ -274,4 +274,21 @@ class StateCensusAnalyserTest {
 		CSVStateCensus[] censusCSV = new Gson().fromJson(sortedCensusData, CSVStateCensus[].class);
 		assertEquals("Arunachal Pradesh", censusCSV[censusCSV.length - 1].state);
 	}
+	
+	/**
+	 * UC 7 : sorting data based on area in descending order
+	 * 
+	 * @throws IOException
+	 * @throws CensusAnalyserException
+	 * @throws CSVBuilderException
+	 */
+	@Test
+	public void givenIndianCensusData_WhenSortedOnArea_ShouldReturnSortedResult()
+			throws IOException, CensusAnalyserException, CSVBuilderException {
+		StateCensusAnalyser stateCensusAnalyser = new StateCensusAnalyser();
+		stateCensusAnalyser.loadStateCensusData(INDIA_CENSUS_FILE_PATH);
+		String sortedCensusData = stateCensusAnalyser.getAreaWiseSortedCensusData();
+		CSVStateCensus[] censusCSV = new Gson().fromJson(sortedCensusData, CSVStateCensus[].class);
+		assertEquals("Rajasthan", censusCSV[0].state);
+	}
 }
