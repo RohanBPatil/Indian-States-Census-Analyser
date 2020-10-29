@@ -1,4 +1,4 @@
-package Indian.State.Census.Analyser;
+package com.rohan.indianstatecensusanalyser;
 
 import java.io.IOException;
 import java.io.Reader;

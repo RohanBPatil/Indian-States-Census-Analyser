@@ -1,4 +1,4 @@
-package Indian.State.Census.Analyser;
+package com.rohan.indianstatecensusanalyser;
 
 @SuppressWarnings("serial")
 public class CensusAnalyserException extends Exception {

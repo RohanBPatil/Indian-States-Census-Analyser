@@ -1,4 +1,4 @@
-package Indian.State.Census.Analyser;
+package com.rohan.indianstatecensusanalyser;
 
 import static org.junit.jupiter.api.Assertions.*;
 
